@@ -21,40 +21,8 @@ def link_drive_direto(link: str) -> str:
     else:
         return link  # Se não for do Google Drive, retorna o link original
 
-def describe_image_from_url(image_url,prompt):
-    llm = ChatOpenAI(
-        api_key=api_key,
-        model="gpt-4o",
-        temperature=0.2,
-        max_tokens=256,
-    )
-    
-    #Imagem usada de exemplo
-    image_exemplo_naoconforme = "https://drive.google.com/uc?export=view&id=1Q0l-6NBVyfBgAqT6zgRb9Lx8PPT_9Njd"
-    image_exemplo_conforme = "https://drive.google.com/uc?export=view&id=1OksBl8pXCKt9Khnzluz8feXt69rITAsT"
-
-    messages = [
-        SystemMessage(content="Você é um assistente que descreve imagens de forma detalhada."),
-        HumanMessage(
-            content=[
-                {"type": "text", "text": "Exemplo não conforme:"},
-                {"type": "image_url", "image_url": {"url": image_exemplo_naoconforme}},
-                {"type": "text", "text": "Exemplo conforme:"},
-                {"type": "image_url", "image_url": {"url": image_exemplo_conforme}},
-                {"type": "text", "text": f"{prompt}"},
-                {"type": "text", "text": "Avalie a imagem enviada a seguir."},
-                {"type": "image_url", "image_url": {"url": image_url}}
-            ]
-        )
-    ]
-    
-    try:
-        response = llm.invoke(messages)
-        return response.content
-    except Exception as e:
-        return f"Erro ao processar a imagem: {str(e)}"
-
-PROMPT_SIMPLIFICADO = """  
+def analisar_imagem_carga(image_url):
+    prompt = """  
 Você é um inspetor de cargas responsável por avaliar a amarração de pneus em caminhões a partir de imagens.
 
 Siga as instruções abaixo para avaliar se a carga está amarrada corretamente:
@@ -88,8 +56,41 @@ FORMATO DA RESPOSTA:
 Responda em português, de forma clara e objetiva.
 """
 
+    llm = ChatOpenAI(
+        api_key=api_key,
+        model="gpt-4o",
+        temperature=0.2,
+        max_tokens=256,
+    )
+    
+    #Imagem usada de exemplo
+    image_exemplo_naoconforme = "https://drive.google.com/uc?export=view&id=1Q0l-6NBVyfBgAqT6zgRb9Lx8PPT_9Njd"
+    image_exemplo_conforme = "https://drive.google.com/uc?export=view&id=1OksBl8pXCKt9Khnzluz8feXt69rITAsT"
+
+    messages = [
+        SystemMessage(content="Você é um assistente que descreve imagens de forma detalhada."),
+        HumanMessage(
+            content=[
+                {"type": "text", "text": "Exemplo não conforme:"},
+                {"type": "image_url", "image_url": {"url": image_exemplo_naoconforme}},
+                {"type": "text", "text": "Exemplo conforme:"},
+                {"type": "image_url", "image_url": {"url": image_exemplo_conforme}},
+                {"type": "text", "text": f"{prompt}"},
+                {"type": "text", "text": "Avalie a imagem enviada a seguir."},
+                {"type": "image_url", "image_url": {"url": image_url}}
+            ]
+        )
+    ]
+    
+    try:
+        response = llm.invoke(messages)
+        return response.content
+    except Exception as e:
+        return f"Erro ao processar a imagem: {str(e)}"
+
+
 # Exemplo de uso:
-link = "https://drive.google.com/file/d/1-JKXBvocylsq_Czbq0AIdr0ncEDy3wGh/view?usp=sharing"
-image_url = link_drive_direto(link)
-descricao = describe_image_from_url(image_url,PROMPT_SIMPLIFICADO)
-print("Descrição da imagem:", descricao)
+#link = "https://drive.google.com/file/d/1-JKXBvocylsq_Czbq0AIdr0ncEDy3wGh/view?usp=sharing"
+#image_url = link_drive_direto(link)
+#descricao = analisar_imagem_carga(image_url)
+#print("Descrição da imagem:", descricao)

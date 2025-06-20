@@ -1,6 +1,6 @@
 # cargo_page.py
 import streamlit as st
-from modelo import analisar_imagem_carga
+from modelo import analisar_imagem_carga, otimizar_imagem
 
 def render_page(modo_edicao=True):
     """
@@ -30,8 +30,8 @@ def render_page(modo_edicao=True):
 
     st.header(f"Carga {carga_selecionada['id']}")
 
-    tipos_carga = ["Selecione", "Grãos", "Líquidos", "Refrigerados"]
-    tipos_base = ["Selecione", "Base SP", "Base RJ", "Base MG"]
+    tipos_carga = ["Selecione", "Pneus"]
+    tipos_base = ["Selecione", "SP-MG"]
     index_carga = tipos_carga.index(carga_selecionada.get('tipo_carga', 'Selecione'))
     index_base = tipos_base.index(carga_selecionada.get('tipo_base', 'Selecione'))
 
@@ -47,7 +47,7 @@ def render_page(modo_edicao=True):
 
     # --- Apenas 3 campos de upload ---
     upload_labels = [
-        "Foto anotação", "Foto carga lado direito", "Foto trocada"
+        "Foto 1", "Foto 2", "Foto 3"
     ]
 
     existing_files = carga_selecionada.get('uploaded_files', {})
@@ -69,6 +69,9 @@ def render_page(modo_edicao=True):
                         key=f"edit_uploader_{i}",
                         type=['png', 'jpg', 'jpeg']
                     )
+                    # Exibe a imagem se um novo arquivo foi carregado
+                    if st.session_state.get(f"edit_uploader_{i}") is not None:
+                        st.image(st.session_state[f"edit_uploader_{i}"], caption="Nova imagem", use_container_width=True)
 
     with tab_video:
         st.info("A funcionalidade de upload de vídeo será implementada em breve.")
@@ -79,7 +82,7 @@ def render_page(modo_edicao=True):
     if "analises" in carga_selecionada and carga_selecionada["analises"]:
         st.subheader("Resultado da IA:")
         for idx, resultado in enumerate(carga_selecionada["analises"], 1):
-            st.write(f"{idx}° Foto: Inspecionado e {resultado.lower()}")
+            st.write(f"{idx}° Foto: {resultado.lower()}")
     else:
         st.info("Nenhum resultado de IA disponível para esta carga.")
 
@@ -102,7 +105,8 @@ def render_page(modo_edicao=True):
                         if uploaded_file is not None:
                             image_bytes = uploaded_file.getvalue()
                             if (imagem_antiga is None) or (imagem_antiga != image_bytes):
-                                resultado_analise = analisar_imagem_carga(image_bytes)
+                                img_b64 = otimizar_imagem(image_bytes)
+                                resultado_analise = analisar_imagem_carga(img_b64)
                                 analises_ia.append(resultado_analise)
                             else:
                                 analises_ia.append(resultado_antigo)
@@ -118,7 +122,7 @@ def render_page(modo_edicao=True):
                 carga["tipo_base"] = tipos_base
                 carga["uploaded_files"] = uploaded_files_data
                 carga["analises"] = analises_ia
-                carga["percentage"] = 75  # Exemplo
+                carga["percentage"] = 0  # Exemplo
 
                 st.success(f"Carga {selected_id} atualizada e analisada com sucesso!")
                 st.session_state.page = 'main'
