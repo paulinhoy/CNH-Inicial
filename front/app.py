@@ -1,8 +1,6 @@
 # app.py
 import streamlit as st
-import pandas as pd
 from datetime import datetime
-import random
 import add_cargo_page
 import cargo_page  # Novo arquivo unificado para detalhes/edição
 
