@@ -124,6 +124,12 @@ def render_page(modo_edicao=True):
                 carga["analises"] = analises_ia
                 carga["percentage"] = 0  # Exemplo
 
+                # Limpar os uploaders para evitar imagens duplicadas
+                for i in range(len(upload_labels)):
+                    if f"edit_uploader_{i}" in st.session_state:
+                        del st.session_state[f"edit_uploader_{i}"]
+
                 st.success(f"Carga {selected_id} atualizada e analisada com sucesso!")
-                st.session_state.page = 'main'
+                # Removendo o redirecionamento para a página principal
+                # st.session_state.page = 'main'
                 st.rerun()

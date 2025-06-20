@@ -82,7 +82,6 @@ def render_page():
 
                             # CHAMA A FUNÇÃO DE ANÁLISE DA IA
                         resultado_analise = analisar_imagem_carga(img_b64)
-                        print(resultado_analise)
                         analises_ia.append(resultado_analise)
                     else:
                         analises_ia.append("Não enviada")
