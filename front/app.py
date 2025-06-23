@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 from datetime import datetime
 import add_cargo_page
@@ -20,12 +19,12 @@ st.markdown("""
     .date-icon { margin-right: 5px; }
     .cargo-title { color: #0074D9; font-weight: bold; }
     .sidebar .sidebar-content { background-color: #1e2e2e; color: white; }
-    .cnh-logo { background-color: grey; border-radius: 10px; padding: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 24px; }
+    .cnh-logo { background-color: #BABABA; border-radius: 10px; padding: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 24px; }
     .sidebar-menu-item { display: flex; align-items: center; padding: 10px 0; color: #20b2aa; text-decoration: none; margin-bottom: 5px; font-size: 18px; font-weight: bold; border-radius: 5px; transition: background 0.2s; }
     .sidebar-menu-item:hover { background-color: rgba(255, 255, 255, 0.1); }
     .sidebar-menu-icon { margin-right: 10px; }
-    .welcome-text { color: #ccc; font-size: 14px; margin-bottom: 5px; }
-    .user-name { color: white; font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+    .welcome-text { color: black; font-size: 14px; margin-bottom: 5px; }
+    .user-name { color: black; font-size: 20px; font-weight: bold; margin-bottom: 20px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -45,7 +44,7 @@ def change_page(page_name, cargo_id=None):
 with st.sidebar:
     st.markdown('<div class="cnh-logo">CNH</div>', unsafe_allow_html=True)
     st.markdown('<div class="welcome-text">Bem-vindo,</div>', unsafe_allow_html=True)
-    st.markdown('<div class="user-name">Paulo</div>', unsafe_allow_html=True)
+    st.markdown('<div class="user-name">User</div>', unsafe_allow_html=True)
     if st.button("Conferência de Cargas", use_container_width=True):
         change_page('main')
     if st.button("Dashboards", use_container_width=True):

@@ -1,5 +1,3 @@
-# add_cargo_page.py
-
 import streamlit as st
 from datetime import datetime
 from modelo import analisar_imagem_carga, otimizar_imagem # IMPORTAMOS NOSSA FUNÇÃO DE IA

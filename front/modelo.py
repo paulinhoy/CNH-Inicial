@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-#from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 import re
@@ -8,6 +7,14 @@ import base64
 from PIL import Image
 import io
 import streamlit as st
+
+#from dotenv import load_dotenv
+## Carrega a chave da API do .env
+#dotenv_path = Path(__file__).resolve().parent / '.env'
+#load_dotenv(dotenv_path)
+#api_key = os.getenv("OPENAI_API_KEY")
+
+api_key = st.secrets["OPENAI_API_KEY"]
 
 def otimizar_imagem(image_input, max_size=(1024, 1024), quality=100):  
     """  
@@ -50,13 +57,6 @@ def preparar_imagem(image_input):
             raise ValueError("O caminho fornecido não é uma URL nem um arquivo existente.")
     else:
         raise ValueError("O parâmetro deve ser uma string (URL ou caminho de arquivo).")
-
-## Carrega a chave da API do .env
-#dotenv_path = Path(__file__).resolve().parent / '.env'
-#load_dotenv(dotenv_path)
-#api_key = os.getenv("OPENAI_API_KEY")
-
-api_key = st.secrets["OPENAI_API_KEY"]
 
 def link_drive_direto(link: str) -> str:
     """

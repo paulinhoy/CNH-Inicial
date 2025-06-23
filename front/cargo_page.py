@@ -1,4 +1,3 @@
-# cargo_page.py
 import streamlit as st
 from modelo import analisar_imagem_carga, otimizar_imagem
 
