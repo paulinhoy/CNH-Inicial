@@ -58,22 +58,35 @@ def render_main_page():
     with col2:
         if st.button("+ Adicionar Carga", type="primary", on_click=change_page, args=('add_cargo',)):
             pass
+
+    # Campo de pesquisa
     st.text_input("Pesquisar", placeholder="Pesquisar por ID da carga...", key="search", label_visibility="collapsed")
     st.divider()
 
-    if not st.session_state.cargas:
-        st.info("Nenhuma carga para exibir no momento. Adicione uma nova carga para começar.")
+    # --- FILTRO DE PESQUISA ---
+    search_value = st.session_state.get("search", "").strip()
+    if search_value:
+        # Filtra por ID (pode adaptar para outros campos se quiser)
+        cargas_filtradas = [c for c in st.session_state.cargas if search_value.lower() in str(c['id']).lower()]
+    else:
+        cargas_filtradas = list(st.session_state.cargas)
+
+    if not cargas_filtradas:
+        st.info("Nenhuma carga encontrada para o termo pesquisado.")
     else:
         num_cols = 4
-        cargas_para_exibir = reversed(st.session_state.cargas)
+        cargas_para_exibir = reversed(cargas_filtradas)
         for i, carga in enumerate(cargas_para_exibir):
             if i % num_cols == 0:
                 cols = st.columns(num_cols)
             with cols[i % num_cols]:
                 with st.container(border=True):
-                    if carga['percentage'] >= 90: percentage_class = "percentage-green"
-                    elif carga['percentage'] >= 70: percentage_class = "percentage-yellow"
-                    else: percentage_class = "percentage-gray"
+                    if carga['percentage'] >= 90:
+                        percentage_class = "percentage-green"
+                    elif carga['percentage'] >= 70:
+                        percentage_class = "percentage-yellow"
+                    else:
+                        percentage_class = "percentage-gray"
                     st.markdown(f"""
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div>

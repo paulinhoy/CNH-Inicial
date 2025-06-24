@@ -29,17 +29,6 @@ def render_page(modo_edicao=True):
 
     st.header(f"Carga {carga_selecionada['id']}")
 
-    tipos_carga = ["Selecione", "Pneus"]
-    tipos_base = ["Selecione", "SP-MG"]
-    index_carga = tipos_carga.index(carga_selecionada.get('tipo_carga', 'Selecione'))
-    index_base = tipos_base.index(carga_selecionada.get('tipo_base', 'Selecione'))
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.selectbox("Tipo de carga:", tipos_carga, index=index_carga, key="edit_tipo_carga", disabled=not modo_edicao)
-    with col2:
-        st.selectbox("Tipo de Base:", tipos_base, index=index_base, key="edit_tipo_base", disabled=not modo_edicao)
-
     st.divider()
 
     tab_fotos, tab_video = st.tabs(["Fotos", "Vídeo"])
@@ -80,10 +69,14 @@ def render_page(modo_edicao=True):
     # Exibe o resultado da IA, se disponível
     if "analises" in carga_selecionada and carga_selecionada["analises"]:
         st.subheader("Resultado da IA:")
-        for idx, resultado in enumerate(carga_selecionada["analises"], 1):  
-                st.markdown(f"**{idx}° Foto:**")  
-                st.info(resultado)  # ou st.markdown(resultado)  
-                st.markdown("---")  # linha divisória
+        for idx, resultado in enumerate(carga_selecionada["analises"], 1):
+            if "AVALIAÇÃO: CONFORME" in resultado:
+                st.success(f"**{idx}° Foto:**\n\n{resultado}")
+            elif "AVALIAÇÃO: NÃO CONFORME" in resultado:
+                st.error(f"**{idx}° Foto:**\n\n{resultado}")
+            else:
+                st.info(f"**{idx}° Foto:**\n\n{resultado}")
+            st.markdown("---")
     else:
         st.info("Nenhum resultado de IA disponível para esta carga.")
 
@@ -93,18 +86,19 @@ def render_page(modo_edicao=True):
             index_to_update = next((i for i, carga in enumerate(st.session_state.cargas) if carga['id'] == selected_id), None)
             if index_to_update is not None:
                 carga = st.session_state.cargas[index_to_update]
-                tipos_carga = st.session_state.edit_tipo_carga
-                tipos_base = st.session_state.edit_tipo_base
 
                 with st.spinner("Analisando imagens... Isso pode levar um momento."):
                     uploaded_files_data = {}
                     analises_ia = []
+
                     for i in range(len(upload_labels)):
                         uploaded_file = st.session_state.get(f"edit_uploader_{i}")
                         imagem_antiga = carga.get("uploaded_files", {}).get(i)
                         resultado_antigo = carga.get("analises", [])[i] if "analises" in carga and len(carga["analises"]) > i else "Não enviada"
+
                         if uploaded_file is not None:
                             image_bytes = uploaded_file.getvalue()
+                            # Se a imagem mudou, faz nova análise
                             if (imagem_antiga is None) or (imagem_antiga != image_bytes):
                                 img_b64 = otimizar_imagem(image_bytes)
                                 resultado_analise = analisar_imagem_carga(img_b64)
@@ -119,8 +113,6 @@ def render_page(modo_edicao=True):
                             else:
                                 analises_ia.append("Não enviada")
 
-                carga["tipo_carga"] = tipos_carga
-                carga["tipo_base"] = tipos_base
                 carga["uploaded_files"] = uploaded_files_data
                 carga["analises"] = analises_ia
                 carga["percentage"] = 0  # Exemplo
@@ -131,6 +123,4 @@ def render_page(modo_edicao=True):
                         del st.session_state[f"edit_uploader_{i}"]
 
                 st.success(f"Carga {selected_id} atualizada e analisada com sucesso!")
-                # Removendo o redirecionamento para a página principal
-                # st.session_state.page = 'main'
                 st.rerun()

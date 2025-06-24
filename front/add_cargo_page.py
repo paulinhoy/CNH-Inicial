@@ -27,9 +27,10 @@ def render_page():
 
     st.header("Nova Carga")
 
-    st.selectbox("Tipo de carga:", ["Selecione", "Pneus"], key="tipo_carga")
-    st.selectbox("Tipo de Base:", ["Selecione", "SP-MG"], key="tipo_base")
-    st.divider()
+#Colocar algum texto falando sobre fazer uploud 
+#    st.selectbox("Tipo de carga:", ["Selecione", "Pneus"], key="tipo_carga")
+#    st.selectbox("Tipo de Base:", ["Selecione", "SP-MG"], key="tipo_base")
+#    st.divider()
 
     st.subheader("Faça o upload de até 3 imagens da carga")
     
@@ -53,49 +54,46 @@ def render_page():
     st.divider()
 
     if st.button("Enviar para análise", type="primary", use_container_width=True):
-        if st.session_state.tipo_carga == "Selecione" or st.session_state.tipo_base == "Selecione":
-            st.warning("Por favor, selecione o tipo de carga e a base antes de enviar.")
-        else:
             # MOSTRA UM SPINNER ENQUANTO A IA TRABALHA
-            with st.spinner("Analisando imagens... Isso pode levar um momento."):
-                novo_id = 101 + len(st.session_state.cargas)
+        with st.spinner("Analisando imagens... Isso pode levar um momento."):
+            novo_id = 101 + len(st.session_state.cargas)
                 
-                uploaded_files_data = {}
-                analises_ia = []
+            uploaded_files_data = {}
+            analises_ia = []
                 
-                # Loop pelos 3 uploaders
-                for i in range(3):
-                    uploaded_file = st.session_state[f"uploader_{i}"]
-                    if uploaded_file is not None:
-                        file_name = uploaded_file.name     
-                        link = links_drive.get(file_name,None)  
-                        #if link is not None:
-                        #    resultado_analise = analisar_imagem_carga(link)   
-                        #    print(resultado_analise)  
-                        #    analises_ia.append(resultado_analise)
-                        #else:                
-                        image_bytes = uploaded_file.getvalue()
-                        uploaded_files_data[i] = image_bytes
-                        img_b64 = otimizar_imagem(image_bytes)
+            # Loop pelos 3 uploaders
+            for i in range(3):
+                uploaded_file = st.session_state[f"uploader_{i}"]
+                if uploaded_file is not None:
+                    file_name = uploaded_file.name     
+                    link = links_drive.get(file_name,None)  
+                    #if link is not None:
+                    #    resultado_analise = analisar_imagem_carga(link)   
+                    #    print(resultado_analise)  
+                    #    analises_ia.append(resultado_analise)
+                    #else:                
+                    image_bytes = uploaded_file.getvalue()
+                    uploaded_files_data[i] = image_bytes
+                    img_b64 = otimizar_imagem(image_bytes)
 
-                            # CHAMA A FUNÇÃO DE ANÁLISE DA IA
-                        resultado_analise = analisar_imagem_carga(img_b64)
-                        analises_ia.append(resultado_analise)
-                    else:
-                        analises_ia.append("Não enviada")
+                        # CHAMA A FUNÇÃO DE ANÁLISE DA IA
+                    resultado_analise = analisar_imagem_carga(img_b64)
+                    analises_ia.append(resultado_analise)
+                else:
+                    analises_ia.append("Não enviada")
 
                 # Cria o dicionário da nova carga com os resultados da IA
-                nova_carga = {
-                    "id": novo_id,
-                    "data": datetime.now().strftime("%d/%m/%Y"),
-                    "tipo_carga": st.session_state.tipo_carga,
-                    "tipo_base": st.session_state.tipo_base,
-                    "percentage": 0,
-                    "uploaded_files": uploaded_files_data,
-                    "analises": analises_ia # SALVA OS RESULTADOS DA IA
-                }
+            nova_carga = {
+                "id": novo_id,
+                "data": datetime.now().strftime("%d/%m/%Y"),
+            #    "tipo_carga": st.session_state.tipo_carga,
+            #    "tipo_base": st.session_state.tipo_base,
+                "percentage": 0,
+                "uploaded_files": uploaded_files_data,
+                "analises": analises_ia # SALVA OS RESULTADOS DA IA
+            }
                 
-                st.session_state.cargas.append(nova_carga)
+            st.session_state.cargas.append(nova_carga)
 
             st.success(f"Carga {novo_id} enviada e analisada com sucesso!")
             st.session_state.page = 'main'
