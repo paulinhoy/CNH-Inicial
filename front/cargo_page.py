@@ -80,8 +80,10 @@ def render_page(modo_edicao=True):
     # Exibe o resultado da IA, se disponível
     if "analises" in carga_selecionada and carga_selecionada["analises"]:
         st.subheader("Resultado da IA:")
-        for idx, resultado in enumerate(carga_selecionada["analises"], 1):
-            st.write(f"{idx}° Foto: {resultado.lower()}")
+        for idx, resultado in enumerate(carga_selecionada["analises"], 1):  
+                st.markdown(f"**{idx}° Foto:**")  
+                st.info(resultado)  # ou st.markdown(resultado)  
+                st.markdown("---")  # linha divisória
     else:
         st.info("Nenhum resultado de IA disponível para esta carga.")
 
