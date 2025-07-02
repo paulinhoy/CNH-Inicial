@@ -116,7 +116,7 @@ Critérops de avaliação de cinta:
  2.1 *VERIFICAÇÃO DA ETIQUETA DE ROTULAGEM*: 
   - Ao receber uma imagem com foco na cinta deve verificar se ela contém uma etiqueta de rotulagem visivel:
 
- FORMATO DE RESPOSTA PARA CINTAS:
+ FORMATO Da RESPOSTA
  1. AVALIAÇÃO: CONFORME/NÃO CONFORME/ATENÇÃO
  2. COSTURA: (Avaliar e descrever se a cinta tem os padrões de constura apropriado)
  3. DESGATES: (Avaliar e descrever se a cinta apresenta desgaste ou localizado)
