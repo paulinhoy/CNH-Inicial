@@ -1,5 +1,4 @@
 import os
-#from pathlib import Path
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 import re
@@ -8,6 +7,7 @@ from PIL import Image
 import io
 import streamlit as st
 
+#from pathlib import Path
 #from dotenv import load_dotenv
 ## Carrega a chave da API do .env
 #dotenv_path = Path(__file__).resolve().parent / '.env'
@@ -73,7 +73,10 @@ def link_drive_direto(link: str) -> str:
 
 def analisar_imagem_carga(image_input):
     prompt = """  
-Você é um inspetor de cargas responsável por avaliar a amarração de pneus em caminhões a partir de imagens.
+Você é um inspetor de cargas responsável por avaliar a amarração de pneus, caminhões e outras cargas a partir de imagens.
+
+As imagens que você receberá poderá conter: 
+1* IMAGEM TOTAL OU PARCIAL DA CARGA*: Nesse caso você seguir os critérios de avaliação abaixo
 
 Siga as instruções abaixo para avaliar se a carga está amarrada corretamente:
 
@@ -90,7 +93,7 @@ Exemplo de amarração incorreta: (exemplo não conforme)
 A cinta de amarração presa diretamente em um furo da estrutura do caminhão, sem nenhum acessório adicional visível.
 
 Exemplo de amarração correta (exemplo conforme)
-a cinta presa a um gancho metálico (tipo olhal ou argola) que está fixado na estrutura do caminhão. Ou seja, há um acessório intermediário entre a cinta e a carroceria.
+A cinta presa a um gancho metálico (tipo olhal ou argola) que está fixado na estrutura do caminhão. Ou seja, há um acessório intermediário entre a cinta e a carroceria. Além disso, a cinta está bem tensionada, não apresentando sinais de desgaste.
 
 Com base nesses critérios, avalie a imagem fornecida e responda:
 - A carga está amarrada corretamente?
@@ -101,6 +104,23 @@ FORMATO DA RESPOSTA:
 2. GANCHOS IDENTIFICADOS: [SIM/NÃO/PARCIALMENTE VISÍVEL] - descreva o ponto de fixação observado
 3. IRREGULARIDADES: [listar se houver]
 4. JUSTIFICATIVA: [explicação técnica baseada nos critérios]
+
+2. *IMAGEM COM FOCO NA CINTA DE AMARRAÇÃO*: Caso você recebe apenas uma imagem da cinta você deve analisar os critérios abaixo
+
+Critérops de avaliação de cinta:
+ - Cintas que apresentam desgaste na costura devem ser consideradas não conforme;
+ - Cintas que estão desfiadas e com pequenos danos devem ser consideradas não conforme mesmo que seja apenas em um local;
+ - Cintas conforme apresenta um padrão de costura bem definido, com linhas retas, uniformes e regulares, o que indica qualidade e segurança na fixação.
+ - Já a cintas não conforme mostra uma costura irregular, com pontos desalinhados, espaçamentos inconsistentes e falta de uniformidade. A falta de padrão pode comprometer a resistência e a segurança da cinta.
+
+ 2.1 *VERIFICAÇÃO DA ETIQUETA DE ROTULAGEM*: 
+  - Ao receber uma imagem com foco na cinta deve verificar se ela contém uma etiqueta de rotulagem visivel:
+
+ FORMATO DE RESPOSTA PARA CINTAS:
+ 1. AVALIAÇÃO: CONFORME/NÃO CONFORME/ATENÇÃO
+ 2. COSTURA: (Avaliar e descrever se a cinta tem os padrões de constura apropriado)
+ 3. DESGATES: (Avaliar e descrever se a cinta apresenta desgaste ou localizado)
+ 4. ETIQUETA DE ROTULAGEM: PRESENTE/AUSENTE/DANIFICADA (Caso a etique esteja Ausente/não visível a availiação principal deve constar como ATENÇÃO se os demais pontos estiverem corretos)
 
 *IMPORTANTE* Responda com base apenas nos critérios fornecidos. Não avalie situações que não estão escritas explicitamente nos critérios de avaliação.
 Responda em português, de forma clara e objetiva.
